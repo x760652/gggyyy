@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>借款管理系統</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --success-color: #28a745;
+            --success-hover: #218838;
+            --warning-color: #ffc107;
+            --warning-hover: #e0a800;
+            --danger-color: #e74c3c;
+            --danger-hover: #c0392b;
+            --secondary-color: #6c757d;
+            --secondary-hover: #5a6268;
+            --contacted-color: #28a745;
+            --uncontacted-color: #dc3545;
+            --paid-color: #d4edda;
+            --due-soon-color: #fff3cd;
+            --overdue-color: #f8d7da;
+            --card-bg: #ffffff;
+            --section-bg: #f8f9fa;
+            --stats-bg: #e9ecef;
+            --border-color: #dee2e6;
+            --text-color: #212529;
+            --light-text: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h3 {
+            font-size: 16px;
+            color: var(--light-text);
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--section-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .form-row input, 
+        .form-row select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-row input:focus, 
+        .form-row select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: var(--success-hover);
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: var(--warning-hover);
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--secondary-hover);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--section-bg);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            color: #495057;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .due-soon {
+            background-color: var(--due-soon-color);
+        }
+        
+        .overdue {
+            background-color: var(--overdue-color);
+        }
+        
+        .paid {
+            background-color: var(--paid-color);
+        }
+        
+        .input-small {
+            width: 70px;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        
+        .input-medium {
+            width: 90px;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        
+        .stats-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--stats-bg);
+            border-radius: 8px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card p {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 5px;
+            color: var(--text-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .period-selector {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .period-selector select {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab-button {
+            padding: 10px 25px;
+            background: var(--section-bg);
+            border: none;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            margin-right: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* 聯絡狀態按鈕樣式 */
+        .contact-status-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 75px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .contact-status-btn.contacted {
+            background-color: var(--contacted-color);
+            color: white;
+        }
+        
+        .contact-status-btn.uncontacted {
+            background-color: var(--uncontacted-color);
+            color: white;
+        }
+        
+        .contact-status-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 1200px) {
+            .form-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .form-row, .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .tab-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                margin-bottom: 5px;
+            }
+            
+            table {
+                font-size: 13px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+        
+        /* 動畫效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-card, .form-section, .loans-section {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* 工具類 */
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>借款管理系統</h1>
+        
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="showTab('current')">當前借款</button>
+            <button class="tab-button" onclick="showTab('monthly')">月度統計</button>
+            <button class="tab-button" onclick="showTab('yearly')">年度統計</button>
+        </div>
+        
+        <div id="current-tab">
+            <div class="stats-section">
+                <h2>統計概覽</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>總借款金額</h3>
+                        <p id="total-loan-amount">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>總實收金額</h3>
+                        <p id="total-received-amount">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>總應收利息</h3>
+                        <p id="total-interest-amount">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>即將到期借款</h3>
+                        <p id="due-soon-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>已過期借款</h3>
+                        <p id="overdue-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>未聯絡客戶</h3>
+                        <p id="uncontacted-count">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>新增借款記錄</h2>
+                <form id="loan-form">
+                    <div class="form-row">
+                        <div>
+                            <label for="customer-name" class="mb-5">客戶名稱</label>
+                            <input type="text" id="customer-name" placeholder="客戶姓名" required>
+                        </div>
+                        <div>
+                            <label for="customer-phone" class="mb-5">客戶電話</label>
+                            <input type="tel" id="customer-phone" placeholder="聯絡電話">
+                        </div>
+                        <div>
+                            <label for="loan-amount" class="mb-5">借款金額</label>
+                            <input type="number" id="loan-amount" placeholder="金額" min="0" required>
+                        </div>
+                        <div>
+                            <label for="interest-amount" class="mb-5">應收利息</label>
+                            <input type="number" id="interest-amount" placeholder="利息" min="0" step="0.01" value="0">
+                        </div>
+                        <div>
+                            <label for="received-amount" class="mb-5">實收金額</label>
+                            <input type="number" id="received-amount" placeholder="實收" min="0" step="0.01" value="0">
+                        </div>
+                        <div>
+                            <label for="due-date" class="mb-5">到期日</label>
+                            <input type="date" id="due-date" required>
+                        </div>
+                        <div class="flex-end">
+                            <button type="submit" class="btn-primary mt-20">新增記錄</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="loans-section">
+                <h2>借款列表</h2>
+                <div class="table-responsive">
+                    <table id="loans-table">
+                        <thead>
+                            <tr>
+                                <th>客戶名稱</th>
+                                <th>客戶電話</th>
+                                <th>借款金額</th>
+                                <th>應收利息</th>
+                                <th>實收金額</th>
+                                <th>到期日</th>
+                                <th>剩餘天數</th>
+                                <th>展延操作</th>
+                                <th>狀態</th>
+                                <th>聯絡狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loans-body">
+                            <!-- 借款記錄將在這裡動態添加 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div id="monthly-tab" style="display: none;">
+            <div class="period-selector">
+                <select id="month-select" onchange="loadMonthlyStats()">
+                    <!-- 月份選項將動態生成 -->
+                </select>
+                <select id="year-select" onchange="loadMonthlyStats()">
+                    <!-- 年份選項將動態生成 -->
+                </select>
+            </div>
+            <div class="stats-section">
+                <h2>月度統計</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>總借款金額</h3>
+                        <p id="monthly-total-loan">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>總應收利息</h3>
+                        <p id="monthly-total-interest">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>總實收金額</h3>
+                        <p id="monthly-total-received">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>借款筆數</h3>
+                        <p id="monthly-loan-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>已清償筆數</h3>
+                        <p id="monthly-paid-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>未聯絡客戶</h3>
+                        <p id="monthly-uncontacted-count">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="monthly-table">
+                    <thead>
+                        <tr>
+                            <th>客戶名稱</th>
+                            <th>客戶電話</th>
+                            <th>借款金額</th>
+                            <th>應收利息</th>
+                            <th>實收金額</th>
+                            <th>到期日</th>
+                            <th>狀態</th>
+                            <th>聯絡狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthly-body">
+                        <!-- 月度借款記錄將在這裡動態添加 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="yearly-tab" style="display: none;">
+            <div class="period-selector">
+                <select id="year-select-yearly" onchange="loadYearlyStats()">
+                    <!-- 年份選項將動態生成 -->
+                </select>
+            </div>
+            <div class="stats-section">
+                <h2>年度統計</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>總借款金額</h3>
+                        <p id="yearly-total-loan">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>總應收利息</h3>
+                        <p id="yearly-total-interest">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>總實收金額</h3>
+                        <p id="yearly-total-received">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>借款筆數</h3>
+                        <p id="yearly-loan-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>已清償筆數</h3>
+                        <p id="yearly-paid-count">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>未聯絡客戶</h3>
+                        <p id="yearly-uncontacted-count">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="yearly-table">
+                    <thead>
+                        <tr>
+                            <th>月份</th>
+                            <th>借款金額</th>
+                            <th>應收利息</th>
+                            <th>實收金額</th>
+                            <th>借款筆數</th>
+                            <th>已清償筆數</th>
+                            <th>未聯絡客戶</th>
+                        </tr>
+                    </thead>
+                    <tbody id="yearly-body">
+                        <!-- 年度統計將在這裡動態添加 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 從本地存儲加載數據
+            let loans = JSON.parse(localStorage.getItem('loans')) || [];
+            let history = JSON.parse(localStorage.getItem('loanHistory')) || [];
+            let monthlyStats = JSON.parse(localStorage.getItem('monthlyStats')) || {};
+            let yearlyStats = JSON.parse(localStorage.getItem('yearlyStats')) || {};
+            
+            // 設置默認到期日為30天後
+            const defaultDueDate = new Date();
+            defaultDueDate.setDate(defaultDueDate.getDate() + 30);
+            document.getElementById('due-date').valueAsDate = defaultDueDate;
+            
+            // 初始化UI
+            updateLoansTable();
+            updateStats();
+            initPeriodSelectors();
+            
+            // 表單提交事件
+            document.getElementById('loan-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 獲取表單數據
+                const customerName = document.getElementById('customer-name').value.trim();
+                const customerPhone = document.getElementById('customer-phone').value.trim();
+                const loanAmount = parseFloat(document.getElementById('loan-amount').value);
+                const interestAmount = parseFloat(document.getElementById('interest-amount').value) || 0;
+                const receivedAmount = parseFloat(document.getElementById('received-amount').value) || 0;
+                const dueDate = document.getElementById('due-date').value;
+                
+                // 驗證數據
+                if (!customerName || isNaN(loanAmount) || !dueDate) {
+                    alert('請填寫所有必填欄位');
+                    return;
+                }
+                
+                // 創建新借款記錄
+                const loan = {
+                    id: Date.now(), // 使用時間戳作為唯一ID
+                    customerName,
+                    customerPhone,
+                    loanAmount,
+                    interestAmount,
+                    receivedAmount,
+                    dueDate,
+                    extendedDays: 0,
+                    status: 'active',
+                    contactStatus: 'uncontacted',
+                    history: [],
+                    createdDate: new Date().toISOString()
+                };
+                
+                // 添加到借款數組
+                loans.push(loan);
+                
+                // 更新統計數據
+                updateAllStats(loan, 'add');
+                
+                // 保存到本地存儲
+                saveAllData();
+                
+                // 更新UI
+                updateLoansTable();
+                updateStats();
+                
+                // 重置表單並設置默認到期日
+                this.reset();
+                document.getElementById('due-date').valueAsDate = defaultDueDate;
+            });
+            
+            // 處理各種操作
+            document.getElementById('loans-body').addEventListener('click', function(e) {
+                const row = e.target.closest('tr');
+                if (!row) return;
+                
+                const id = parseInt(row.getAttribute('data-id'));
+                const loan = loans.find(l => l.id === id);
+                if (!loan) return;
+                
+                // 展延操作
+                if (e.target.classList.contains('extend-btn')) {
+                    const extendDays = parseInt(row.querySelector('.extend-input').value) || 30;
+                    const paymentAmount = parseFloat(row.querySelector('.payment-input').value) || 0;
+                    
+                    if (extendDays > 0) {
+                        addToHistory(loan, 'extend', extendDays);
+                        loan.receivedAmount += paymentAmount;
+                        loan.extendedDays += extendDays;
+                        updateAllStats(loan, 'extend');
+                        saveAllData();
+                        updateLoansTable();
+                        updateStats();
+                    }
+                }
+                
+                // 清償操作
+                if (e.target.classList.contains('pay-btn')) {
+                    addToHistory(loan, 'pay');
+                    loan.status = 'paid';
+                    updateAllStats(loan, 'pay');
+                    saveAllData();
+                    updateLoansTable();
+                    updateStats();
+                }
+                
+                // 恢復操作
+                if (e.target.classList.contains('restore-btn')) {
+                    restoreFromHistory(loan);
+                    recalculateAllStats();
+                    saveAllData();
+                    updateLoansTable();
+                    updateStats();
+                }
+                
+                // 刪除操作
+                if (e.target.classList.contains('delete-btn')) {
+                    if (confirm('確定要刪除此借款記錄嗎？此操作無法撤銷！')) {
+                        addToHistory(loan, 'delete');
+                        loans = loans.filter(l => l.id !== id);
+                        updateAllStats(loan, 'delete');
+                        saveAllData();
+                        updateLoansTable();
+                        updateStats();
+                    }
+                }
+                
+                // 聯絡狀態切換
+                if (e.target.classList.contains('contact-status-btn')) {
+                    loan.contactStatus = loan.contactStatus === 'contacted' ? 'uncontacted' : 'contacted';
+                    addToHistory(loan, 'change_contact_status');
+                    saveAllData();
+                    updateLoansTable();
+                    updateStats();
+                }
+            });
+            
+            // 處理實收金額和利息編輯
+            document.getElementById('loans-body').addEventListener('change', function(e) {
+                const row = e.target.closest('tr');
+                if (!row) return;
+                
+                const id = parseInt(row.getAttribute('data-id'));
+                const loan = loans.find(l => l.id === id);
+                if (!loan) return;
+                
+                if (e.target.classList.contains('received-input')) {
+                    const newAmount = parseFloat(e.target.value) || 0;
+                    addToHistory(loan, 'edit_received', newAmount - loan.receivedAmount);
+                    loan.receivedAmount = newAmount;
+                    updateAllStats(loan, 'edit_received');
+                    saveAllData();
+                    updateStats();
+                }
+                
+                if (e.target.classList.contains('interest-input')) {
+                    const newAmount = parseFloat(e.target.value) || 0;
+                    addToHistory(loan, 'edit_interest', newAmount - loan.interestAmount);
+                    loan.interestAmount = newAmount;
+                    updateAllStats(loan, 'edit_interest');
+                    saveAllData();
+                    updateStats();
+                }
+            });
+            
+            // 更新所有相關統計數據
+            function updateAllStats(loan, action) {
+                const date = new Date(loan.createdDate || new Date());
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const yearMonth = `${year}-${month.toString().padStart(2, '0')}`;
+                
+                if (!monthlyStats[yearMonth]) {
+                    monthlyStats[yearMonth] = {
+                        totalLoan: 0,
+                        totalInterest: 0,
+                        totalReceived: 0,
+                        loanCount: 0,
+                        paidCount: 0,
+                        uncontactedCount: 0,
+                        loans: []
+                    };
+                }
+                
+                switch(action) {
+                    case 'add':
+                        monthlyStats[yearMonth].totalLoan += loan.loanAmount;
+                        monthlyStats[yearMonth].totalInterest += loan.interestAmount || 0;
+                        monthlyStats[yearMonth].totalReceived += loan.receivedAmount || 0;
+                        monthlyStats[yearMonth].loanCount++;
+                        if (loan.status === 'paid') monthlyStats[yearMonth].paidCount++;
+                        if (loan.contactStatus === 'uncontacted') monthlyStats[yearMonth].uncontactedCount++;
+                        monthlyStats[yearMonth].loans.push(loan);
+                        break;
+                        
+                    case 'extend':
+                    case 'edit_received':
+                        monthlyStats[yearMonth].totalReceived = monthlyStats[yearMonth].loans.reduce((sum, l) => {
+                            return sum + (l.id === loan.id ? loan.receivedAmount : (l.receivedAmount || 0));
+                        }, 0);
+                        break;
+                        
+                    case 'edit_interest':
+                        monthlyStats[yearMonth].totalInterest = monthlyStats[yearMonth].loans.reduce((sum, l) => {
+                            return sum + (l.id === loan.id ? loan.interestAmount : (l.interestAmount || 0));
+                        }, 0);
+                        break;
+                        
+                    case 'pay':
+                        monthlyStats[yearMonth].paidCount = monthlyStats[yearMonth].loans.filter(l => l.status === 'paid').length;
+                        break;
+                        
+                    case 'delete':
+                        monthlyStats[yearMonth].loans = monthlyStats[yearMonth].loans.filter(l => l.id !== loan.id);
+                        monthlyStats[yearMonth].totalLoan = monthlyStats[yearMonth].loans.reduce((sum, l) => sum + l.loanAmount, 0);
+                        monthlyStats[yearMonth].totalInterest = monthlyStats[yearMonth].loans.reduce((sum, l) => sum + (l.interestAmount || 0), 0);
+                        monthlyStats[yearMonth].totalReceived = monthlyStats[yearMonth].loans.reduce((sum, l) => sum + (l.receivedAmount || 0), 0);
+                        monthlyStats[yearMonth].loanCount = monthlyStats[yearMonth].loans.length;
+                        monthlyStats[yearMonth].paidCount = monthlyStats[yearMonth].loans.filter(l => l.status === 'paid').length;
+                        monthlyStats[yearMonth].uncontactedCount = monthlyStats[yearMonth].loans.filter(l => l.contactStatus === 'uncontacted').length;
+                        break;
+                        
+                    case 'change_contact_status':
+                        monthlyStats[yearMonth].uncontactedCount = monthlyStats[yearMonth].loans.filter(l => l.contactStatus === 'uncontacted').length;
+                        break;
+                }
+                
+                updateYearlyStatsFromMonthly();
+            }
+            
+            // 從月度統計更新年度統計
+            function updateYearlyStatsFromMonthly() {
+                yearlyStats = {};
+                
+                for (const [yearMonth, stats] of Object.entries(monthlyStats)) {
+                    const year = yearMonth.split('-')[0];
+                    const month = parseInt(yearMonth.split('-')[1]);
+                    
+                    if (!yearlyStats[year]) {
+                        yearlyStats[year] = {
+                            totalLoan: 0,
+                            totalInterest: 0,
+                            totalReceived: 0,
+                            loanCount: 0,
+                            paidCount: 0,
+                            uncontactedCount: 0,
+                            months: {}
+                        };
+                    }
+                    
+                    // 更新年度總計
+                    yearlyStats[year].totalLoan = Object.entries(monthlyStats)
+                        .filter(([ym, _]) => ym.startsWith(year))
+                        .reduce((sum, [_, s]) => sum + s.totalLoan, 0);
+                    
+                    yearlyStats[year].totalInterest = Object.entries(monthlyStats)
+                        .filter(([ym, _]) => ym.startsWith(year))
+                        .reduce((sum, [_, s]) => sum + s.totalInterest, 0);
+                    
+                    yearlyStats[year].totalReceived = Object.entries(monthlyStats)
+                        .filter(([ym, _]) => ym.startsWith(year))
+                        .reduce((sum, [_, s]) => sum + s.totalReceived, 0);
+                    
+                    yearlyStats[year].loanCount = Object.entries(monthlyStats)
+                        .filter(([ym, _]) => ym.startsWith(year))
+                        .reduce((sum, [_, s]) => sum + s.loanCount, 0);
+                    
+                    yearlyStats[year].paidCount = Object.entries(monthlyStats)
+                        .filter(([ym, _]) => ym.startsWith(year))
+                        .reduce((sum, [_, s]) => sum + s.paidCount, 0);
+                    
+                    yearlyStats[year].uncontactedCount = Object.entries(monthlyStats)
+                        .filter(([ym, _]) => ym.startsWith(year))
+                        .reduce((sum, [_, s]) => sum + s.uncontactedCount, 0);
+                    
+                    // 更新月份數據
+                    yearlyStats[year].months[month] = {
+                        totalLoan: stats.totalLoan,
+                        totalInterest: stats.totalInterest,
+                        totalReceived: stats.totalReceived,
+                        loanCount: stats.loanCount,
+                        paidCount: stats.paidCount,
+                        uncontactedCount: stats.uncontactedCount
+                    };
+                }
+            }
+            
+            // 重新計算所有統計數據
+            function recalculateAllStats() {
+                monthlyStats = {};
+                yearlyStats = {};
+                
+                loans.forEach(loan => {
+                    const date = new Date(loan.createdDate || new Date());
+                    const year = date.getFullYear();
+                    const month = date.getMonth() + 1;
+                    const yearMonth = `${year}-${month.toString().padStart(2, '0')}`;
+                    
+                    if (!monthlyStats[yearMonth]) {
+                        monthlyStats[yearMonth] = {
+                            totalLoan: 0,
+                            totalInterest: 0,
+                            totalReceived: 0,
+                            loanCount: 0,
+                            paidCount: 0,
+                            uncontactedCount: 0,
+                            loans: []
+                        };
+                    }
+                    
+                    monthlyStats[yearMonth].totalLoan += loan.loanAmount;
+                    monthlyStats[yearMonth].totalInterest += loan.interestAmount || 0;
+                    monthlyStats[yearMonth].totalReceived += loan.receivedAmount || 0;
+                    monthlyStats[yearMonth].loanCount++;
+                    if (loan.status === 'paid') monthlyStats[yearMonth].paidCount++;
+                    if (loan.contactStatus === 'uncontacted') monthlyStats[yearMonth].uncontactedCount++;
+                    monthlyStats[yearMonth].loans.push(loan);
+                });
+                
+                updateYearlyStatsFromMonthly();
+            }
+            
+            // 保存所有數據到本地存儲
+            function saveAllData() {
+                localStorage.setItem('loans', JSON.stringify(loans));
+                localStorage.setItem('loanHistory', JSON.stringify(history));
+                localStorage.setItem('monthlyStats', JSON.stringify(monthlyStats));
+                localStorage.setItem('yearlyStats', JSON.stringify(yearlyStats));
+            }
+            
+            // 添加操作到歷史記錄
+            function addToHistory(loan, action, value = 0) {
+                const historyEntry = {
+                    id: loan.id,
+                    timestamp: new Date().toISOString(),
+                    action,
+                    data: {
+                        extendedDays: loan.extendedDays,
+                        status: loan.status,
+                        receivedAmount: loan.receivedAmount,
+                        interestAmount: loan.interestAmount,
+                        loanAmount: loan.loanAmount,
+                        contactStatus: loan.contactStatus
+                    },
+                    value,
+                    loanData: JSON.parse(JSON.stringify(loan))
+                };
+                
+                history.push(historyEntry);
+            }
+            
+            // 從歷史記錄恢復
+            function restoreFromHistory(loan) {
+                const loanHistory = history.filter(h => h.id === loan.id).sort((a, b) => 
+                    new Date(b.timestamp) - new Date(a.timestamp));
+                
+                if (loanHistory.length > 0) {
+                    const lastAction = loanHistory[0];
+                    
+                    if (lastAction.action === 'delete') {
+                        loans.push(lastAction.loanData);
+                    } else {
+                        loan.extendedDays = lastAction.data.extendedDays;
+                        loan.status = lastAction.data.status;
+                        loan.receivedAmount = lastAction.data.receivedAmount;
+                        loan.interestAmount = lastAction.data.interestAmount;
+                        loan.contactStatus = lastAction.data.contactStatus;
+                    }
+                    
+                    history = history.filter(h => h !== lastAction);
+                }
+            }
+            
+            // 初始化時間選擇器
+            function initPeriodSelectors() {
+                const monthSelect = document.getElementById('month-select');
+                const yearSelect = document.getElementById('year-select');
+                const yearSelectYearly = document.getElementById('year-select-yearly');
+                
+                monthSelect.innerHTML = '';
+                yearSelect.innerHTML = '';
+                yearSelectYearly.innerHTML = '';
+                
+                for (let i = 1; i <= 12; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `${i}月`;
+                    monthSelect.appendChild(option);
+                }
+                
+                const currentYear = new Date().getFullYear();
+                for (let i = currentYear; i >= currentYear - 5; i--) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `${i}年`;
+                    yearSelect.appendChild(option.cloneNode(true));
+                    yearSelectYearly.appendChild(option);
+                }
+                
+                const currentMonth = new Date().getMonth() + 1;
+                monthSelect.value = currentMonth;
+                yearSelect.value = currentYear;
+                yearSelectYearly.value = currentYear;
+            }
+            
+            // 加載月度統計
+            window.loadMonthlyStats = function() {
+                const month = document.getElementById('month-select').value;
+                const year = document.getElementById('year-select').value;
+                const yearMonth = `${year}-${month.toString().padStart(2, '0')}`;
+                
+                const stats = monthlyStats[yearMonth] || {
+                    totalLoan: 0,
+                    totalInterest: 0,
+                    totalReceived: 0,
+                    loanCount: 0,
+                    paidCount: 0,
+                    uncontactedCount: 0,
+                    loans: []
+                };
+                
+                // 更新統計卡片
+                document.getElementById('monthly-total-loan').textContent = `$${stats.totalLoan.toLocaleString()}`;
+                document.getElementById('monthly-total-interest').textContent = `$${stats.totalInterest.toLocaleString()}`;
+                document.getElementById('monthly-total-received').textContent = `$${stats.totalReceived.toLocaleString()}`;
+                document.getElementById('monthly-loan-count').textContent = stats.loanCount;
+                document.getElementById('monthly-paid-count').textContent = stats.paidCount;
+                document.getElementById('monthly-uncontacted-count').textContent = stats.uncontactedCount;
+                
+                // 更新表格
+                const tbody = document.getElementById('monthly-body');
+                tbody.innerHTML = '';
+                
+                stats.loans.forEach(loan => {
+                    const dueDate = new Date(loan.dueDate);
+                    dueDate.setDate(dueDate.getDate() + loan.extendedDays);
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${loan.customerName}</td>
+                        <td>${loan.customerPhone || '-'}</td>
+                        <td>$${loan.loanAmount.toLocaleString()}</td>
+                        <td>$${loan.interestAmount.toLocaleString()}</td>
+                        <td>$${loan.receivedAmount.toLocaleString()}</td>
+                        <td>${formatShortDate(dueDate)}</td>
+                        <td>${loan.status === 'paid' ? '已清償' : '未清償'}</td>
+                        <td>
+                            <button class="contact-status-btn ${loan.contactStatus === 'contacted' ? 'contacted' : 'uncontacted'}" 
+                                    data-id="${loan.id}">
+                                ${loan.contactStatus === 'contacted' ? '已聯絡' : '未聯絡'}
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            };
+            
+            // 加載年度統計
+            window.loadYearlyStats = function() {
+                const year = document.getElementById('year-select-yearly').value;
+                
+                const stats = yearlyStats[year] || {
+                    totalLoan: 0,
+                    totalInterest: 0,
+                    totalReceived: 0,
+                    loanCount: 0,
+                    paidCount: 0,
+                    uncontactedCount: 0,
+                    months: {}
+                };
+                
+                // 更新統計卡片
+                document.getElementById('yearly-total-loan').textContent = `$${stats.totalLoan.toLocaleString()}`;
+                document.getElementById('yearly-total-interest').textContent = `$${stats.totalInterest.toLocaleString()}`;
+                document.getElementById('yearly-total-received').textContent = `$${stats.totalReceived.toLocaleString()}`;
+                document.getElementById('yearly-loan-count').textContent = stats.loanCount;
+                document.getElementById('yearly-paid-count').textContent = stats.paidCount;
+                document.getElementById('yearly-uncontacted-count').textContent = stats.uncontactedCount;
+                
+                // 更新表格
+                const tbody = document.getElementById('yearly-body');
+                tbody.innerHTML = '';
+                
+                for (let month = 1; month <= 12; month++) {
+                    const monthStats = stats.months[month] || {
+                        totalLoan: 0,
+                        totalInterest: 0,
+                        totalReceived: 0,
+                        loanCount: 0,
+                        paidCount: 0,
+                        uncontactedCount: 0
+                    };
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${year}年${month}月</td>
+                        <td>$${monthStats.totalLoan.toLocaleString()}</td>
+                        <td>$${monthStats.totalInterest.toLocaleString()}</td>
+                        <td>$${monthStats.totalReceived.toLocaleString()}</td>
+                        <td>${monthStats.loanCount}</td>
+                        <td>${monthStats.paidCount}</td>
+                        <td>${monthStats.uncontactedCount}</td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            };
+            
+            // 切換標籤頁
+            window.showTab = function(tabName) {
+                document.getElementById('current-tab').style.display = tabName === 'current' ? 'block' : 'none';
+                document.getElementById('monthly-tab').style.display = tabName === 'monthly' ? 'block' : 'none';
+                document.getElementById('yearly-tab').style.display = tabName === 'yearly' ? 'block' : 'none';
+                
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                if (tabName === 'monthly') loadMonthlyStats();
+                if (tabName === 'yearly') loadYearlyStats();
+            };
+            
+            // 更新借款表格
+            function updateLoansTable() {
+                const tbody = document.getElementById('loans-body');
+                tbody.innerHTML = '';
+                
+                // 按到期日排序 (即將到期的排在最上面)
+                loans.sort((a, b) => {
+                    if (a.status === 'paid' && b.status !== 'paid') return 1;
+                    if (a.status !== 'paid' && b.status === 'paid') return -1;
+                    
+                    const dateA = new Date(a.dueDate);
+                    const dateB = new Date(b.dueDate);
+                    
+                    dateA.setDate(dateA.getDate() + a.extendedDays);
+                    dateB.setDate(dateB.getDate() + b.extendedDays);
+                    
+                    return dateA - dateB;
+                });
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                loans.forEach(loan => {
+                    const dueDate = new Date(loan.dueDate);
+                    dueDate.setDate(dueDate.getDate() + loan.extendedDays);
+                    
+                    const timeDiff = dueDate - today;
+                    const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                    
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-id', loan.id);
+                    
+                    if (loan.status === 'paid') {
+                        row.classList.add('paid');
+                    } else if (daysRemaining < 0) {
+                        row.classList.add('overdue');
+                    } else if (daysRemaining <= 7) {
+                        row.classList.add('due-soon');
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${loan.customerName}</td>
+                        <td>${loan.customerPhone || '-'}</td>
+                        <td>$${loan.loanAmount.toLocaleString()}</td>
+                        <td><input type="number" class="interest-input input-small" value="${loan.interestAmount}" min="0" step="0.01"></td>
+                        <td><input type="number" class="received-input input-small" value="${loan.receivedAmount}" min="0" step="0.01"></td>
+                        <td>${formatShortDate(dueDate)}</td>
+                        <td>${loan.status === 'paid' ? '已清償' : (daysRemaining >= 0 ? daysRemaining + '天' : '已過期')}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <input type="number" class="payment-input input-small" min="0" step="0.01" placeholder="金額" ${loan.status === 'paid' ? 'disabled' : ''}>
+                                <input type="number" class="extend-input input-small" min="1" value="30" ${loan.status === 'paid' ? 'disabled' : ''}>
+                                <button class="extend-btn btn-warning" ${loan.status === 'paid' ? 'disabled' : ''}>展延</button>
+                            </div>
+                        </td>
+                        <td>${loan.status === 'paid' ? '已清償' : '未清償'}</td>
+                        <td>
+                            <button class="contact-status-btn ${loan.contactStatus === 'contacted' ? 'contacted' : 'uncontacted'}" 
+                                    data-id="${loan.id}">
+                                ${loan.contactStatus === 'contacted' ? '已聯絡' : '未聯絡'}
+                            </button>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="pay-btn btn-success" ${loan.status === 'paid' ? 'disabled' : ''}>清償</button>
+                                <button class="restore-btn btn-secondary">恢復</button>
+                                <button class="delete-btn btn-danger">刪除</button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+            }
+            
+            // 更新統計數據
+            function updateStats() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                let totalLoanAmount = 0;
+                let totalInterestAmount = 0;
+                let totalReceivedAmount = 0;
+                let dueSoonCount = 0;
+                let overdueCount = 0;
+                let uncontactedCount = 0;
+                
+                loans.forEach(loan => {
+                    totalLoanAmount += loan.loanAmount;
+                    totalInterestAmount += loan.interestAmount || 0;
+                    totalReceivedAmount += loan.receivedAmount || 0;
+                    
+                    if (loan.contactStatus === 'uncontacted') {
+                        uncontactedCount++;
+                    }
+                    
+                    if (loan.status !== 'paid') {
+                        const dueDate = new Date(loan.dueDate);
+                        dueDate.setDate(dueDate.getDate() + loan.extendedDays);
+                        
+                        const timeDiff = dueDate - today;
+                        const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                        
+                        if (daysRemaining < 0) {
+                            overdueCount++;
+                        } else if (daysRemaining <= 7) {
+                            dueSoonCount++;
+                        }
+                    }
+                });
+                
+                document.getElementById('total-loan-amount').textContent = `$${totalLoanAmount.toLocaleString()}`;
+                document.getElementById('total-interest-amount').textContent = `$${totalInterestAmount.toLocaleString()}`;
+                document.getElementById('total-received-amount').textContent = `$${totalReceivedAmount.toLocaleString()}`;
+                document.getElementById('due-soon-count').textContent = dueSoonCount;
+                document.getElementById('overdue-count').textContent = overdueCount;
+                document.getElementById('uncontacted-count').textContent = uncontactedCount;
+            }
+            
+            // 格式化日期為 MM/DD
+            function formatShortDate(date) {
+                const d = new Date(date);
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${month}/${day}`;
+            }
+            
+            // 格式化日期為 YYYY-MM-DD
+            function formatDate(date) {
+                const d = new Date(date);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+        });
+    </script>
+</body>
+</html>
